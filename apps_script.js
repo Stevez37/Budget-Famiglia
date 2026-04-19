@@ -151,7 +151,8 @@ function doGet(e) {
 
 function scriviVoce(e) {
   try {
-    const payload = JSON.parse(decodeURIComponent(e.parameter.data));
+    const raw = e.parameter.data || '';
+    const payload = JSON.parse(raw.includes('%') ? decodeURIComponent(raw) : raw);
     const ss      = SpreadsheetApp.getActiveSpreadsheet();
     const sheet   = ss.getSheetByName(SHEET_NAME_INPUT) || ss.insertSheet(SHEET_NAME_INPUT);
 

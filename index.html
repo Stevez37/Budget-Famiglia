@@ -298,14 +298,24 @@ async function invia() {
   btn.innerHTML = '<span class="spinner"></span>Salvataggio…';
 
   try {
-    const payload = encodeURIComponent(JSON.stringify({data:dataIT, descrizione, importo, categoria:categoriaSelezionata, tipo:tipoCorrente}));
-    // Usiamo Image per il request: bypassa CORS completamente, funziona su iOS Safari
-    await new Promise((resolve) => {
-      const img = new Image();
-      img.onload = img.onerror = () => resolve();
-      img.src = `${SCRIPT_URL}?action=write&data=${payload}`;
-      setTimeout(resolve, 3000); // fallback timeout
+    // Form submission verso iframe: navigazione vera, nessun blocco CORS
+    const form = document.createElement('form');
+    form.method = 'GET';
+    form.action = SCRIPT_URL;
+    form.target = 'gs-iframe';
+    form.style.display = 'none';
+
+    [['action','write'],['data', JSON.stringify({data:dataIT, descrizione, importo, categoria:categoriaSelezionata, tipo:tipoCorrente})]].forEach(([n,v]) => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden'; inp.name = n; inp.value = v;
+      form.appendChild(inp);
     });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
+    await new Promise(r => setTimeout(r, 2000)); // attendi che Apps Script scriva
     mostraToast('✅ Salvato!');
     importoStr = '';
     categoriaSelezionata = '';
