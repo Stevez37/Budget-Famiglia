@@ -146,6 +146,9 @@
   <button class="salva" id="salva-btn" onclick="invia()">Salva</button>
 </div>
 
+<!-- Iframe nascosto per scrivere su Apps Script senza CORS -->
+<iframe id="gs-iframe" name="gs-iframe" style="display:none;width:0;height:0;border:0;" aria-hidden="true"></iframe>
+
 <!-- HISTORY -->
 <div class="history-panel" id="history-panel">
   <div class="history-header">
@@ -296,7 +299,10 @@ async function invia() {
 
   try {
     const payload = encodeURIComponent(JSON.stringify({data:dataIT, descrizione, importo, categoria:categoriaSelezionata, tipo:tipoCorrente}));
-    await fetch(`${SCRIPT_URL}?action=write&data=${payload}`, {mode: 'no-cors'});
+    // Usiamo l'iframe invece di fetch: naviga verso Apps Script come Safari, senza blocchi CORS
+    document.getElementById('gs-iframe').src = `${SCRIPT_URL}?action=write&data=${payload}`;
+    // Aspettiamo 1.8s (il tempo che Apps Script processi la richiesta)
+    await new Promise(r => setTimeout(r, 1800));
     mostraToast('✅ Salvato!');
     importoStr = '';
     categoriaSelezionata = '';

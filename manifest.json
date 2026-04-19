@@ -2,7 +2,7 @@
   "name": "Budget 2026",
   "short_name": "Budget",
   "description": "Traccia le tue spese mensili",
-  "start_url": "/budget/",
+  "start_url": "/Budget-Famiglia/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
