@@ -299,10 +299,13 @@ async function invia() {
 
   try {
     const payload = encodeURIComponent(JSON.stringify({data:dataIT, descrizione, importo, categoria:categoriaSelezionata, tipo:tipoCorrente}));
-    // Usiamo l'iframe invece di fetch: naviga verso Apps Script come Safari, senza blocchi CORS
-    document.getElementById('gs-iframe').src = `${SCRIPT_URL}?action=write&data=${payload}`;
-    // Aspettiamo 1.8s (il tempo che Apps Script processi la richiesta)
-    await new Promise(r => setTimeout(r, 1800));
+    // Usiamo Image per il request: bypassa CORS completamente, funziona su iOS Safari
+    await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = img.onerror = () => resolve();
+      img.src = `${SCRIPT_URL}?action=write&data=${payload}`;
+      setTimeout(resolve, 3000); // fallback timeout
+    });
     mostraToast('✅ Salvato!');
     importoStr = '';
     categoriaSelezionata = '';

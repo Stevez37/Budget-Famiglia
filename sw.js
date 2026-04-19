@@ -1,5 +1,5 @@
 // Service Worker — permette l'installazione come PWA
-const CACHE = 'budget-v1';
+const CACHE = 'budget-v2';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
