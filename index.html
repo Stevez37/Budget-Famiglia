@@ -96,7 +96,7 @@
 <body>
 
 <div class="header">
-  <h1>💰 Budget 2026</h1>
+  <h1>💰 Budget 2026 <span style="font-size:.55rem;color:#334155;font-weight:400">v5</span></h1>
   <button class="history-btn" onclick="apriHistory()">Storico</button>
 </div>
 
@@ -298,24 +298,11 @@ async function invia() {
   btn.innerHTML = '<span class="spinner"></span>Salvataggio…';
 
   try {
-    // Form submission verso iframe: navigazione vera, nessun blocco CORS
-    const form = document.createElement('form');
-    form.method = 'GET';
-    form.action = SCRIPT_URL;
-    form.target = 'gs-iframe';
-    form.style.display = 'none';
-
-    [['action','write'],['data', JSON.stringify({data:dataIT, descrizione, importo, categoria:categoriaSelezionata, tipo:tipoCorrente})]].forEach(([n,v]) => {
-      const inp = document.createElement('input');
-      inp.type = 'hidden'; inp.name = n; inp.value = v;
-      form.appendChild(inp);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
-    await new Promise(r => setTimeout(r, 2000)); // attendi che Apps Script scriva
+    const url = `${SCRIPT_URL}?action=write&data=${encodeURIComponent(JSON.stringify({data:dataIT, descrizione, importo, categoria:categoriaSelezionata, tipo:tipoCorrente}))}`;
+    // window.open() è una navigazione vera: bypassa CORS e ITP di Safari
+    const win = window.open(url, '_blank');
+    await new Promise(r => setTimeout(r, 2500));
+    if (win && !win.closed) win.close();
     mostraToast('✅ Salvato!');
     importoStr = '';
     categoriaSelezionata = '';
